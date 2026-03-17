@@ -1,1 +1,36 @@
-<h1>Data Explorer</h1>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Explorer</title>
+    <style>
+        body { background: #f4f7f6; font-family: Arial, sans-serif; padding: 20px; }
+        .centrum { background: white; max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .menu { background: #2c3e50; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .menu a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- główny div, centrum strony (wyśrodkowane) -->
+    <div class="centrum">
+
+        <!-- 1. menu górne -->
+        <div class="menu">
+            <h2 style="color: white; margin: 0 0 10px 0;">📊 Data Explorer</h2>
+            <a href="#">Strona Główna</a> | <a href="#">Wgraj CSV</a> | <a href="#">Lista plików</a>
+        </div>
+
+        <!-- 2. treść, tu będą wklejać się inne strony, z tymi danymi czy coś -->
+        {% block content %}
+            <h3>To jest system eksploracji plików.</h3>
+            <p>Wybierz opcję. Wkrótcę pojawią się tutaj jakies dane.</p>
+        {% endblock %}
+
+        <!-- 3. stopka -->
+        <p style="color: gray; font-size: 12px; margin-top: 30px;">&copy; Data Explorer 2026</p>
+
+    </div>
+
+</body>
+</html>
