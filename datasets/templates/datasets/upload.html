@@ -1,0 +1,16 @@
+{% extends 'datasets/index.html' %} {% block content %}
+<div class="text-start" data-aos="fade-left">
+    <h2 class="mb-4">Wgraj swój plik CSV</h2>
+    
+    <div class="card p-4 shadow-sm">
+        <form action="#" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Wybierz plik z dysku (.csv)</label>
+                <input class="form-control" type="file" id="formFile" accept=".csv">
+            </div>
+            <button type="submit" class="btn btn-primary">Prześlij i analizuj</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+/* Główne tło strony */
+body {
+    background-color: #f8fafc;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* Customowy kolor paska nawigacji */
+.navbar-custom {
+    background-color: #2563eb;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Stylowanie kontenera na treść */
+.main-container {
+    min-height: 80vh;
+    padding-top: 50px;
+}
+
+/* Efekt dla białego boxa z danymi */
+.content-card {
+    background-color: white;
+    padding: 3rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Stopka */
+footer {
+    color: #64748b;
+    font-size: 0.875rem;
+}
