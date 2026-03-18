@@ -1,0 +1,55 @@
+{% extends 'datasets/index.html' %}
+
+{% block content %}
+<div class="text-start" data-aos="fade-right">
+    
+    <h2 class="mb-3">Wgrane pliki CSV</h2>
+    <p class="text-muted mb-4">Poniżej znajduje się lista wszystkich plików wgranych do naszego systemu.</p>
+
+    <div class="card p-4 shadow-sm">
+        
+        <!-- table-hover - podświetla wiersz po najechaniu -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nazwa pliku</th>
+                        <th scope="col">Data wgrania</th>
+                        <th scope="col" class="text-end">Szczegóły</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <!-- pętla django -->
+                    {% for plik in pliki %}
+                        <tr>
+                            <td class="fw-bold">{{ plik.id }}</td>
+                            <td>{{ plik.nazwa }}</td>
+                            <td class="text-muted">{{ plik.data_wgrania }}</td>
+                            <td class="text-end">
+                                <!-- przycisk z obramowaniem (btn-outline-primary) -->
+                                <a href="#" class="btn btn-sm btn-outline-primary">Szczegóły</a>
+                            </td>
+                        </tr>
+                        
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <span class="text-muted d-block mb-3">Brak wgranych plików w bazie danych.</span>
+                                <!-- przycisk prowadzący do wgrywania -->
+                                <a href="{% url 'upload_csv' %}" class="btn btn-primary">
+                                    Przejdź do wgrywania CSV
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

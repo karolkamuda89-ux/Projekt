@@ -23,9 +23,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Strona Główna</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Strona Główna</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'upload_csv' %}">Wgraj CSV</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Lista plików</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'list' %}">Lista plików</a></li>
                 </ul>
             </div>
         </div>
