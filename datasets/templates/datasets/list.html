@@ -26,11 +26,11 @@
                     {% for plik in pliki %}
                         <tr>
                             <td class="fw-bold">{{ plik.id }}</td>
-                            <td>{{ plik.nazwa }}</td>
-                            <td class="text-muted">{{ plik.data_wgrania }}</td>
+                            <td>{{ plik.name }}</td>
+                            <td class="text-muted">{{ plik.uploaded_at }}</td>
                             <td class="text-end">
                                 <!-- przycisk z obramowaniem (btn-outline-primary) -->
-                                <a href="{% url 'detail' %}" class="btn btn-sm btn-outline-primary">Szczegóły</a>
+                                <a href="{% url 'detail' plik.id %}" class="btn btn-sm btn-outline-primary">Szczegóły</a>
                             </td>
                         </tr>
                         

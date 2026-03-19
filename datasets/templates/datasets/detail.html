@@ -17,12 +17,12 @@
         <!-- podział na równe koluemny (col-md-6 czyli po 50%, bo domyślnie 12 pasków) -->
         <div class="row">
             <div class="col-md-6">
-                <p class="mb-2"><strong>ID w bazie:</strong> {{ plik.id|default:"1" }}</p>
-                <p class="mb-2"><strong>Data wgrania:</strong> {{ plik.data_wgrania|default:"Dzisiaj, 12:00" }}</p>
+                <p class="mb-2"><strong>ID w bazie:</strong> {{ plik.id}}</p>
+                <p class="mb-2"><strong>Data wgrania:</strong> {{ plik.uploaded_at|date:"d.m.Y H:i" }}</p>
             </div>
             <div class="col-md-6">
-                <p class="mb-2"><strong>Status analizy:</strong> <span class="badge bg-success">Zakończono</span></p>
-                <p class="mb-2"><strong>Ilość wierszy:</strong> 1500 (przykładowo)</p>
+                <p class="mb-2"><strong>Status analizy:</strong> <span class="badge bg-success">{{ plik.status|default:"W toku" }}</span></p>
+                <p class="mb-2"><strong>Ilość wierszy:</strong> {{ plik.ilos_wierszy|default:"0" }}</p>
             </div>
         </div>
     </div>
