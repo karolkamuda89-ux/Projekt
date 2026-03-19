@@ -1,0 +1,41 @@
+{% extends 'datasets/index.html' %}
+
+{% block content %}
+<div class="text-start" data-aos="fade-up">
+    
+    <!-- przycisk powrotu -->
+    <a href="{% url 'list' %}" class="btn btn-outline-secondary btn-sm mb-4">
+        &larr; Powrót do listy plików
+    </a>
+
+    <!-- nagłówek -->
+    <h2 class="mb-4">Szczegóły pliku: <span class="text-primary">{{ plik.nazwa|default:"Mój_raport.csv" }}</span></h2>
+    
+    <div class="card p-4 shadow-sm mb-4">
+        <h5 class="card-title border-bottom pb-2 mb-3 text-muted">Metadane pliku</h5>
+        
+        <!-- podział na równe koluemny (col-md-6 czyli po 50%, bo domyślnie 12 pasków) -->
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-2"><strong>ID w bazie:</strong> {{ plik.id|default:"1" }}</p>
+                <p class="mb-2"><strong>Data wgrania:</strong> {{ plik.data_wgrania|default:"Dzisiaj, 12:00" }}</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-2"><strong>Status analizy:</strong> <span class="badge bg-success">Zakończono</span></p>
+                <p class="mb-2"><strong>Ilość wierszy:</strong> 1500 (przykładowo)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- karta na statystyki lub wykresy -->
+    <div class="card p-4 shadow-sm">
+        <h5 class="card-title border-bottom pb-2 mb-3 text-muted">Podstawowe statystyki</h5>
+        <div class="text-center py-4">
+            <p class="text-muted mb-0">
+                Tutaj pojawią się wykresy i wyliczenia dla pliku. <br>
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
