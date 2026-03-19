@@ -5,6 +5,17 @@
     <div class="card p-4 shadow-sm">
         <form action="{% url 'upload_csv' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Tytuł danych:</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Np. Sprzedaz marzec" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_descripiton" class="form-label">Opis pliku:</label>
+                <input type="text" class="form-control" id="descripiton" name="description" placeholder="Opis pliku" required>
+            </div>
+
             <div class="mb-3">
                 <label for="formFile" class="form-label">Wybierz plik z dysku (.csv)</label>
                 <input class="form-control" type="file" name="file" id="formFile" accept=".csv" required>

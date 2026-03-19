@@ -10,8 +10,8 @@ def index(request):
     return render(request, "datasets/index.html")
 def upload_csv(request):
     if request.method == 'POST' and request.FILES.get('file'):
-        name = request.POST.get('name', 'Nowy plik')
-        description = request.POST.get('description', '')
+        name = request.POST.get('title', 'Untilted')
+        description = request.POST.get('description', 'none')
         file = request.FILES['file']
         
         # Zapis do bazy danych
@@ -26,3 +26,4 @@ def file_detail(request):
 def detail(request, plik_id):
     plik = get_object_or_404(Dataset, id=plik_id)
     return render(request, 'datasets/detail.html', {'plik': plik})
+    
