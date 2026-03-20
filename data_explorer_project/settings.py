@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
 import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,6 +24,10 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+MEDIA_URL = '/media/' ##dodanie miesjsca w ktorym beda dostepne pliki w przegladarce ##
+MEDIA_ROOT = BASE_DIR / 'media' # fizyczna ścieżka na dysku gdzie django ma zapisywać pliki 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' ## automatyczne nadawanie numerow id dla nowych wpisow w bazie danych (duzych)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
