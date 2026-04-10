@@ -9,6 +9,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('upload/', views.upload_csv, name='upload_csv'),
     path('list/', views.file_list, name='list'),
-    path('detail/<int:dataset_id>/', views.dataset_detail, name='detail'),
+    path('detail/<int:dataset_id>/', views.dataset_detail, name='dataset_detail'),
     path('login/', auth_views.LoginView.as_view(template_name="registration/login.html"), name='login'),
 ]
