@@ -15,7 +15,7 @@
 </div>    
 
     <!-- nagłówek -->
-    <h2 class="mb-4">Szczegóły pliku: <span class="text-primary">{{ plik.title|default:"Mój_raport.csv" }}</span></h2>
+    <h2 class="mb-4">Szczegóły pliku: <span class="text-primary">{{ plik.name|default:"Mój_raport.csv" }}</span></h2>
     
     <div class="card p-4 shadow-sm mb-4">
         <h5 class="card-title border-bottom pb-2 mb-3 text-muted">Metadane pliku</h5>
@@ -28,7 +28,7 @@
             </div>
             <div class="col-md-6">
                 <p class="mb-2"><strong>Status analizy:</strong> <span class="badge bg-success">{{ plik.status|default:"W toku" }}</span></p>
-                <p class="mb-2"><strong>Ilość wierszy:</strong> {{ plik.ilos_wierszy|default:"0" }}</p>
+                <p class="mb-2"><strong>Ilość wierszy:</strong> {{ statystyki.liczba_wierszy}}</p>
             </div>
         </div>
     </div>
@@ -53,22 +53,22 @@
                 <tbody>
                     <tr>
                         <td>Liczba wierszy (rekordów)</td>
-                        <td class="fw-bold">{{ statystyki.liczba_wierszy|default:"1500" }}</td>
+                        <td class="fw-bold">{{ statystyki.liczba_wierszy }}</td>
                     </tr>
                     <tr>
                         <td>Liczba kolumn</td>
-                        <td class="fw-bold">{{ statystyki.liczba_kolumn|default:"8" }}</td>
+                        <td class="fw-bold">{{ statystyki.liczba_kolumn }}</td>
                     </tr>
                     <tr>
                         <td>Puste komórki (braki danych)</td>
                         <!-- Czy ten plik ma jakieś puste komórki? Jeśli tak to text-danger da czerwony, jeśli nie to text-succes da zielony -->
                         <td class="fw-bold {% if statystyki.puste > 0 %}text-danger{% else %}text-success{% endif %}">
-                            {{ statystyki.puste|default:"0" }}
+                            {{ statystyki.puste }}
                         </td>
                     </tr>
                     <tr>
                         <td>Rozmiar pliku</td>
-                        <td class="fw-bold text-muted">{{ statystyki.rozmiar|default:"2.4 MB" }}</td>
+                        <td class="fw-bold text-muted">{{ statystyki.rozmiar }}</td>
                     </tr>
                 </tbody>
             </table>

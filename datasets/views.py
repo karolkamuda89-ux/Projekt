@@ -21,4 +21,4 @@ def file_list(request):
 def dataset_detail(request, dataset_id):
     dataset = get_object_or_404(Dataset, id=dataset_id)
     stats = get_statistics(dataset.file.path)
-    return render(request, 'datasets/detail.html', {'dataset': dataset, 'stats': stats})
+    return render(request, 'datasets/detail.html', {'plik': dataset, 'statystyki': stats})
