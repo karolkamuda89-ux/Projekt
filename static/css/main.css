@@ -29,3 +29,43 @@ footer {
     color: #64748b;
     font-size: 0.875rem;
 }
+/* Wspólne style dla obu kafli */
+#logowanie, #rejstracja {
+    background-color: #ffffff !important;
+    border: 2px solid #007bff;
+    border-radius: 20px;
+    color: #767373;
+    padding: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+}
+
+/* Tekst wewnątrz */
+#logowanie h4, #rejstracja h4 {
+    font-weight: 700;
+    margin: 0;
+}
+
+/* --- EFEKTY HOVER --- */
+
+#logowanie:hover {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 123, 255, 0.3);
+}
+
+#rejstracja:hover {
+    background-color: #0056b3 !important;
+    color: #ffffff !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 86, 179, 0.3);
+    border-color: #004085;
+}
+
+/* Efekt kliknięcia */
+#logowanie:active, #rejstracja:active {
+    transform: translateY(-2px) scale(0.98);
+}

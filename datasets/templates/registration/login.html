@@ -2,16 +2,77 @@
 
 {%block content%}
     <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card shadow p-4">
-                    <h3 class="text-center mb-1">Logowanie</h3>
-                    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            <div class="row mb-4 row justify-content-center">
+                <div class="col-7 mb-3">
+                    <div class="card shadow-sm p-3 text-center" id = "logowanie" onclick="pokazFormularz('login')">
+                        <h4 class="mb-0">Logowanie</h4>
+                    </div>
                 </div>
                 
+                <div class="col-7">
+                    <div class="card shadow-sm p-3 text-center" id = "rejstracja" onclick="pokazFormularz('register')">
+                        <h4 class="mb-0">Rejestracja</h4>
+                    </div>
+                </div>
             </div>
 
-        </div>
+            <div id="form-container">
+                
+                <div class="card shadow p-4" id="login-form" style="display: none;">
+                    <h3 class="text-center mb-4">Zaloguj się</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Login</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hasło</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Wejdź</button>
+                    </form>
+                </div>
 
+                <div class="card shadow p-4" id="register-form" style="display: none;">
+                    <h3 class="text-center mb-4">Stwórz konto</h3>
+                    <form method="post" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Login</label>
+                            <input type="login" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hasło</label>
+                            <input type="haslo" name="password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">E-mail</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Zarejestruj</button>
+                    </form>
+                </div>
+
+            </div> </div>
     </div>
+</div>
+    <script>
+        function pokazFormularz(typ) {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+
+            if (typ === 'login'){
+                document.getElementById('login-form').style.display = 'block';
+                document.getElementById('logowanie').style.display = 'none';
+            } else if (typ ==='register'){
+                document.getElementById('register-form').style.display = "block";
+                document.getElementById('rejstracja').style.display = 'none';
+            }
+            }
+        
+</script>
 {%endblock%}
