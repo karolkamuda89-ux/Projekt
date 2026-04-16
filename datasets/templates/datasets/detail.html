@@ -74,6 +74,15 @@
             </table>
         </div>
     </div>
+    <!-- karta do wykresu -->
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h5 class="card-title text-muted mb-0">Wizualizacja typów danych</h5>
+            <span class="badge bg-warning text-dark">Chart.js</span>
+        </div>
+
+        <canvas id="myChart" height="100"></canvas>
+    </div>
 
 </div>
 {% endblock %}
@@ -104,4 +113,47 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // 1. znajdujemy plik na stronie
+    const ctx = document.getElementById('myChart');
+
+    // 2. tworzymy wykres
+    new Chart(ctx, {
+        type: 'doughnut', // typ wykresu: bar (słupkowy), pie (kołowy), line (liniowy)
+        data: {
+            // etykiety wykresu (np. nazwy kolumn)
+            labels: ['Kolumna A', 'Kolumna B', 'Kolumna C', 'Kolumna D', 'Kolumna E'],
+            datasets: [{
+                label: 'Ilość błędów w danych',
+                // Wartości wykresu - tutaj do podpięcia dane z django
+                data: [12, 19, 3, 5, 2],
+                // kolory wykresu
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}
