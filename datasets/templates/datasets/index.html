@@ -27,9 +27,22 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Strona Główna</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'upload_csv' %}">Wgraj CSV</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'list' %}">Lista plików</a></li>
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}">
+                        {%csrf_token%}
+                        <button type="submit" class="btn btn-outline-light btn-sm px-2 py-1 me-2" style="0.75rem; border-radius: 5px;">
+                        Wyloguj
+                        </button>
+                    </form>
+                    <div class="text-white text-start" style="line-height: 1.1; min-width: max-content;">
+                        <span class="d-block text-white-50 d-flex justify-content-center align-items-center" style="font-size: 0.7rem;">Witaj</span>
+                        <span class="fw-bold d-flex justify-content-center align-items-center" style="font-size: 0.85rem;">{{ user.username }}</span>
+                    </div>
+                    {% else %}
                     <li class="nav-item ms-lg-5">
                     <a class="btn btn-outline-light" href="{%url 'login'%}">Zaloguj</a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

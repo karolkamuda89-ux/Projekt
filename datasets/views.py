@@ -5,10 +5,11 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     return render(request, "datasets/index.html")
-
+@login_required
 def upload_csv(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
@@ -25,7 +26,7 @@ def dataset_detail(request, dataset_id):
     dataset = get_object_or_404(Dataset, id=dataset_id)
     stats = get_statistics(dataset.file.path)
     return render(request, 'datasets/detail.html', {'plik': dataset, 'statystyki': stats})
-def register(request):
+def register(request): ################# DO POPRAWY ALE DZIAŁA
     if request.method == 'POST':
         un = request.POST.get('username')
         ps = request.POST.get('password')
