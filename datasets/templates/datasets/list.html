@@ -17,6 +17,7 @@
                         <th scope="col">ID</th>
                         <th scope="col">Nazwa pliku</th>
                         <th scope="col">Data wgrania</th>
+                        <th scope="col">Nazwa użytkownika</th>
                         <th scope="col" class="text-end">Szczegóły</th>
                     </tr>
                 </thead>
@@ -24,15 +25,33 @@
                 <tbody>
                     <!-- pętla django -->
                     {% for plik in datasets %}
-                        <tr>
-                            <td class="fw-bold">{{ plik.id }}</td>
-                            <td>{{ plik.name }}</td>
-                            <td class="text-muted">{{ plik.uploaded_at }}</td>
-                            <td class="text-end">
-                                <!-- przycisk z obramowaniem (btn-outline-primary) -->
-                                <a href="{% url 'dataset_detail' plik.id %}" class="btn btn-sm btn-outline-primary">Szczegóły</a>
-                            </td>
-                        </tr>
+                    <tr class="shadow-sm"> <td class="fw-bold text-primary">#{{ plik.id }}</td>
+    
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-semibold">{{ plik.name }}</span>
+                                <small class="text-muted" style="font-size: 0.75rem;">{{ plik.file.name }}</small>
+                            </div>
+                        </td>
+    
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                {{ plik.uploaded_at|date:"d.m.Y H:i" }}
+                            </span>
+                        </td>
+    
+                        <td class="text-center">
+                            <span class="badge rounded-pill bg-info text-dark">
+                            <i class="bi bi-person"></i> {{ plik.user.username }}
+                            </span>
+                        </td>
+    
+                        <td class="text-end ">
+                            <a href="{% url 'dataset_detail' plik.id %}" class="btn btn-sm btn-primary rounded-pill px-3">
+                                Szczegóły
+                            </a>
+                        </td>
+                    </tr>
                         
                     {% empty %}
                         <tr>

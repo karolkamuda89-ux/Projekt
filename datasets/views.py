@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .utils import get_statistics
-from .models import Dataset
+from .models import UploadedFile
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
@@ -13,17 +13,34 @@ def index(request):
 def upload_csv(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
         if file:
-            dataset = Dataset.objects.create(file=file, name=file.name)
-            return redirect('dataset_detail', dataset_id=dataset.id)
+            # Tworzymy obiekt UploadedFile i przypisujemy zalogowanego użytkownika
+            new_file = UploadedFile.objects.create(
+                description = description,
+                file= file, 
+                name= title, 
+                user= request.user
+            )
+            # Przekierowujemy do detali (upewnij się, że nazwa parametru w urls.py pasuje)
+            return redirect('dataset_detail', dataset_id=new_file.id)
+            
     return render(request, 'datasets/upload.html')
 
+@login_required
 def file_list(request):
-    datasets = Dataset.objects.all() # Pobierasz listę z bazy
-    return render(request, 'datasets/list.html', {'datasets': datasets})
+    # 1. NAJPIERW pobierasz dane z bazy i zapisujesz do zmiennej
+    user_files = UploadedFile.objects.filter(user=request.user)
+    print(f"DEBUG: Użytkownik {request.user.username} ma plików: {user_files.count()}")
+    
+    # 2. POTEM wysyłasz tę zmienną do szablonu
+    return render(request, 'datasets/list.html', {
+        'datasets': user_files
+    })
 
 def dataset_detail(request, dataset_id):
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    dataset = get_object_or_404(UploadedFile, id=dataset_id, user=request.user)
     stats = get_statistics(dataset.file.path)
     return render(request, 'datasets/detail.html', {'plik': dataset, 'statystyki': stats})
 def register(request): ################# DO POPRAWY ALE DZIAŁA
