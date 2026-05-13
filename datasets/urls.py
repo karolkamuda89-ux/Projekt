@@ -12,4 +12,5 @@ urlpatterns = [
     path('detail/<int:dataset_id>/', views.dataset_detail, name='dataset_detail'),
     path('login/', auth_views.LoginView.as_view(template_name="registration/login.html"), name='login'),
     path('register/', views.register, name='register'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

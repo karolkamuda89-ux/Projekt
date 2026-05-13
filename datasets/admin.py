@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Dataset
+from .models import UploadedFile
 
-admin.site.register(Dataset)
+admin.site.register(UploadedFile)
