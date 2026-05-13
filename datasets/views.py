@@ -32,6 +32,12 @@ def upload_csv(request):
 def file_list(request):
     # 1. NAJPIERW pobierasz dane z bazy i zapisujesz do zmiennej
     user_files = UploadedFile.objects.filter(user=request.user)
+    # Wyszukiwarka plików - Pobieramy nazwę plików wpisane w wyszukiwarkę:
+    query = request.GET.get('q')
+    if query:
+        # Filtrujemy pliki użytkownika po nazwie (name)
+        user_files = user_files.filter(name__icontains=query)
+        
     print(f"DEBUG: Użytkownik {request.user.username} ma plików: {user_files.count()}")
     
     # 2. POTEM wysyłasz tę zmienną do szablonu
