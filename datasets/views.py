@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def index(request):
     return render(request, "datasets/index.html")
@@ -57,11 +58,12 @@ def register(request): ################# DO POPRAWY ALE DZIAŁA
         print(f"DEBUG: Próba rejestracji: {un}, hasło: {ps}") # To pojawi się w konsoli (czarne okno)
         if User.objects.filter(username=un).exists():
             messages.error(request, 'Ta nazwa użytkownika jest już zajęta!')
-            return render(request, 'datasets/login.html')
+            return render(request, 'registration/login.html')
         
         if un and ps and em:
             User.objects.create_user(username=un, password=ps , email=em)
             print("DEBUG: Zapisano użytkownika!")
+            messages.success(request, 'Konto zostało utworzone! Możesz się teraz zalogować.')
             return redirect('login')
         else:
             print("DEBUG: Brak loginu lub hasła - nie zapisuję!")
