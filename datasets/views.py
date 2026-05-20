@@ -7,6 +7,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 def index(request):
     return render(request, "datasets/index.html")
@@ -50,18 +52,30 @@ def dataset_detail(request, dataset_id):
     dataset = get_object_or_404(UploadedFile, id=dataset_id, user=request.user)
     stats = get_statistics(dataset.file.path)
     return render(request, 'datasets/detail.html', {'plik': dataset, 'statystyki': stats})
-def register(request): ################# DO POPRAWY ALE DZIAŁA
+
+def register(request): ################# Poprawione
     if request.method == 'POST':
+
         un = request.POST.get('username')
         ps = request.POST.get('password')
         em = request.POST.get('email')
-        print(f"DEBUG: Próba rejestracji: {un}, hasło: {ps}") # To pojawi się w konsoli (czarne okno)
+        
+        print(f"DEBUG: Próba rejestracji: {un}")
         if User.objects.filter(username=un).exists():
             messages.error(request, 'Ta nazwa użytkownika jest już zajęta!')
             return render(request, 'registration/login.html')
         
         if un and ps and em:
-            User.objects.create_user(username=un, password=ps , email=em)
+            try:
+                # Sprawdzamy czy hasło spełnia wymogi
+                validate_password(ps, user=User(username=un))
+            except ValidationError as e:
+                # Jeśli nie spełnia, to wywalamy błąd że za słabe
+                messages.error(request, ' '.join(e.messages))
+                return render(request, 'registration/login.html')
+            
+            # Jeśli jest dobre to zapisujemy w bazie użytkownika
+            User.objects.create_user(username=un, password=ps, email=em)
             print("DEBUG: Zapisano użytkownika!")
             messages.success(request, 'Konto zostało utworzone! Możesz się teraz zalogować.')
             return redirect('login')
