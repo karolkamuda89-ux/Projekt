@@ -63,15 +63,25 @@
                         
                     {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center py-5">
+                            <td colspan="5" class="text-center py-5">
+                                
+                                {% if request.GET.q %}
+                                    <div class="alert alert-warning d-inline-block shadow-sm">
+                                        <i class="bi bi-search mb-2 d-block fs-3"></i>
+                                        <strong>Brak wyników wyszukiwania!</strong><br>
+                                        Nie znaleziono plików pasujących do zapytania: <span class="fst-italic">"{{ request.GET.q }}"</span>.<br>
+                                        <a href="{% url 'list' %}" class="btn btn-outline-dark btn-sm mt-3">Wyczyść wyszukiwanie</a>
+                                    </div>
+                                {% else %}
                                 <span class="text-muted d-block mb-3">Brak wgranych plików w bazie danych.</span>
-                                <!-- przycisk prowadzący do wgrywania -->
-                                <a href="{% url 'upload_csv' %}" class="btn btn-primary">
-                                    Przejdź do wgrywania CSV
-                                </a>
-                            </td>
+                                    <a href="{% url 'upload_csv' %}" class="btn btn-primary">
+                                        <i class="bi bi-cloud-arrow-up"></i> Przejdź do wgrywania CSV
+                                    </a>
+                                {% endif %}
+                                </td>
                         </tr>
                     {% endfor %}
+
                 </tbody>
 
             </table>
