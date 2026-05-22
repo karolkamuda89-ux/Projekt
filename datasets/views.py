@@ -1,9 +1,9 @@
+import os
 from django.shortcuts import render, redirect
 from .utils import get_statistics
 from .models import UploadedFile
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError
 
 def index(request):
     return render(request, "datasets/index.html")
+
 @login_required
 def upload_csv(request):
     if request.method == 'POST':
@@ -19,6 +20,13 @@ def upload_csv(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         if file:
+            # PONIŻEJ ZACZYNA SIĘ TWÓJ COMMIT: Wyciągnięcie rozszerzenia i walidacja
+            file_extension = os.path.splitext(file.name)[1]
+            if file_extension.lower() != '.csv':
+                messages.error(request, "Nieprawidłowy format. Aplikacja akceptuje wyłącznie pliki z rozszerzeniem .csv.")
+                return redirect('upload_csv') # Wracamy do tego samego widoku uploadu po błędzie
+            # KONIEC TWOJEGO COMMITA
+
             # Tworzymy obiekt UploadedFile i przypisujemy zalogowanego użytkownika
             new_file = UploadedFile.objects.create(
                 description = description,
@@ -43,7 +51,7 @@ def file_list(request):
         
     print(f"DEBUG: Użytkownik {request.user.username} ma plików: {user_files.count()}")
     
-    # 2. POTEM wysyłasz tę zmienną do szablonu
+    # 2. POTEM wysyłasz tę zmienną do szablonu pod nazwą 'datasets'
     return render(request, 'datasets/list.html', {
         'datasets': user_files
     })
