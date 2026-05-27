@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from datasets import views
 
 urlpatterns = [
     path('', include('datasets.urls')),
     path('admin/', admin.site.urls),
+    path('delete/<int:dataset_id>/', views.delete_dataset, name='delete_dataset'),
 ]

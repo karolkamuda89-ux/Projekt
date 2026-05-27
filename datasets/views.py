@@ -91,3 +91,21 @@ def register(request): ################# Poprawione
             print("DEBUG: Brak loginu lub hasła - nie zapisuję!")
     
     return render(request, 'registration/login.html')
+
+@login_required
+def delete_dataset(request, dataset_id):
+    # 1. szukamy pliku w bazie, upewniając się, że należy do zalogowanego użytkownika
+    dataset = get_object_or_404(UploadedFile, id=dataset_id, user=request.user)
+    
+    # 2. usuwamy fizyczny plik z dysku
+    if dataset.file:
+        dataset.file.delete()
+        
+    # 3. usuwamy wpis z tabeli w bazie danych
+    dataset.delete()
+    
+    # 4. komunikat sukcesu
+    messages.success(request, f'Plik "{dataset.name}" został pomyślnie usunięty.')
+    
+    # 5. wracamy na stronę z listą plików
+    return redirect('list')
