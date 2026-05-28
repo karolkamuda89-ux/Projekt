@@ -2,158 +2,330 @@
 
 {% block content %}
 <div class="text-start" data-aos="fade-up">
-    
+
+    <!-- ── Nagłówek + przyciski nawigacji ── -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- przycisk powrotu -->
         <a href="{% url 'list' %}" class="btn btn-outline-secondary btn-sm">
             &larr; Powrót do listy plików
         </a>
-        <!-- przycisk do usuwania pliku -->
-    <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <button type="button" class="btn btn-danger btn-sm shadow-sm"
+                data-bs-toggle="modal" data-bs-target="#deleteModal">
             Usuń plik
         </button>
-</div>    
+    </div>
 
-    <!-- nagłówek -->
-    <h2 class="mb-4">Szczegóły pliku: <span class="text-primary">{{ plik.name|default:"Mój_raport.csv" }}</span></h2>
-    
+    <h2 class="mb-4">
+        Szczegóły pliku: <span class="text-primary">{{ plik.name|default:"Mój_raport.csv" }}</span>
+    </h2>
+
+    <!-- ══════════════════════════════════════════
+         KARTA 1 – Metadane pliku
+    ══════════════════════════════════════════ -->
     <div class="card p-4 shadow-sm mb-4">
-        <h5 class="card-title border-bottom pb-2 mb-3 text-muted">Metadane pliku</h5>
-        
-        <!-- podział na równe koluemny (col-md-6 czyli po 50%, bo domyślnie 12 pasków) -->
-        <div class="row">
-            <div class="col-md-6">
-                <p class="mb-2"><strong>ID w bazie:</strong> {{ plik.id}}</p>
-                <p class="mb-2"><strong>Data wgrania:</strong> {{ plik.uploaded_at|date:"d.m.Y H:i" }}</p>
+        <h5 class="card-title border-bottom pb-2 mb-3 text-muted">📁 Metadane pliku</h5>
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-3">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="text-muted small mb-1">ID w bazie</div>
+                    <div class="fw-bold fs-5">{{ plik.id }}</div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <p class="mb-2"><strong>Status analizy:</strong> <span class="badge bg-success">{{ plik.status|default:"W toku" }}</span></p>
-                <p class="mb-2"><strong>Ilość wierszy:</strong> {{ statystyki.liczba_wierszy}}</p>
+            <div class="col-sm-6 col-lg-3">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="text-muted small mb-1">Data wgrania</div>
+                    <div class="fw-bold">{{ plik.uploaded_at|date:"d.m.Y" }}</div>
+                    <div class="text-muted small">{{ plik.uploaded_at|date:"H:i" }}</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="text-muted small mb-1">Rozmiar pliku</div>
+                    <div class="fw-bold fs-5">{{ statystyki.rozmiar }}</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="text-muted small mb-1">Status analizy</div>
+                    <div class="mt-1">
+                        <span class="badge bg-success fs-6">{{ plik.status|default:"W toku" }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- karta na statystyki lub wykresy -->
-<div class="card p-4 shadow-sm mb-4">
-        
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-            <h5 class="card-title text-muted mb-0">Podstawowe statystyki</h5>
-            <span class="badge bg-primary text-light">Pandas Engine</span>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-sm mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <!-- Podział tego po 50% podstawowoych statystyk-->
-                        <th scope="col" style="width: 50%;">Cecha pliku</th>
-                        <th scope="col" style="width: 50%;">Wartość</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Liczba wierszy (rekordów)</td>
-                        <td class="fw-bold">{{ statystyki.liczba_wierszy }}</td>
-                    </tr>
-                    <tr>
-                        <td>Liczba kolumn</td>
-                        <td class="fw-bold">{{ statystyki.liczba_kolumn }}</td>
-                    </tr>
-                    <tr>
-                        <td>Puste komórki (braki danych)</td>
-                        <!-- Czy ten plik ma jakieś puste komórki? Jeśli tak to text-danger da czerwony, jeśli nie to text-succes da zielony -->
-                        <td class="fw-bold {% if statystyki.puste > 0 %}text-danger{% else %}text-success{% endif %}">
-                            {{ statystyki.puste }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Rozmiar pliku</td>
-                        <td class="fw-bold text-muted">{{ statystyki.rozmiar }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- karta do wykresu -->
+    <!-- ══════════════════════════════════════════
+         KARTA 2 – Podstawowe statystyki (kafelki)
+    ══════════════════════════════════════════ -->
     <div class="card p-4 shadow-sm mb-4">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-            <h5 class="card-title text-muted mb-0">Wizualizacja typów danych</h5>
+            <h5 class="card-title text-muted mb-0">📊 Podstawowe statystyki</h5>
+            <span class="badge bg-primary">Pandas Engine</span>
+        </div>
+        <div class="row g-3 text-center">
+            <div class="col-6 col-lg-3">
+                <div class="rounded p-3 h-100" style="background:#f0f4ff;">
+                    <div class="display-6 fw-bold text-primary">{{ statystyki.liczba_wierszy }}</div>
+                    <div class="text-muted small mt-1">Wiersze (rekordy)</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="rounded p-3 h-100" style="background:#f0fff4;">
+                    <div class="display-6 fw-bold text-success">{{ statystyki.liczba_kolumn }}</div>
+                    <div class="text-muted small mt-1">Kolumny</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="rounded p-3 h-100"
+                     style="background:{% if statystyki.puste > 0 %}#fff5f5{% else %}#f0fff4{% endif %};">
+                    <div class="display-6 fw-bold {% if statystyki.puste > 0 %}text-danger{% else %}text-success{% endif %}">
+                        {{ statystyki.puste }}
+                    </div>
+                    <div class="text-muted small mt-1">Puste komórki</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="rounded p-3 h-100" style="background:#fafafa;">
+                    <div class="display-6 fw-bold text-secondary">{{ statystyki.kolumny_szczegoly|length }}</div>
+                    <div class="text-muted small mt-1">Przeanalizowanych kolumn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         KARTA 3 – Szczegóły kolumn
+    ══════════════════════════════════════════ -->
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h5 class="card-title text-muted mb-0">🔍 Szczegóły kolumn</h5>
+            <div>
+                <span class="badge bg-info text-dark me-1" style="cursor:pointer;" onclick="filterCols('all')">Wszystkie</span>
+                <span class="badge bg-success me-1"         style="cursor:pointer;" onclick="filterCols('numeric')">Liczbowe</span>
+                <span class="badge bg-warning text-dark me-1" style="cursor:pointer;" onclick="filterCols('categorical')">Tekstowe</span>
+                <span class="badge bg-secondary"            style="cursor:pointer;" onclick="filterCols('empty')">Puste</span>
+            </div>
+        </div>
+
+        {% if statystyki.kolumny_szczegoly %}
+        <div class="row g-3" id="col-cards">
+            {% for kol in statystyki.kolumny_szczegoly %}
+            <div class="col-sm-6 col-xl-4 col-card" data-type="{{ kol.type }}">
+                <div class="border rounded p-3 h-100 position-relative
+                    {% if kol.type == 'numeric' %}border-success-subtle
+                    {% elif kol.type == 'categorical' %}border-warning-subtle
+                    {% else %}border-secondary-subtle{% endif %}">
+
+                    <span class="position-absolute top-0 end-0 m-2 badge
+                        {% if kol.type == 'numeric' %}bg-success
+                        {% elif kol.type == 'categorical' %}bg-warning text-dark
+                        {% else %}bg-secondary{% endif %}">
+                        {% if kol.type == 'numeric' %}Liczbowa
+                        {% elif kol.type == 'categorical' %}Tekstowa
+                        {% else %}Pusta{% endif %}
+                    </span>
+
+                    <div class="fw-semibold text-truncate pe-5 mb-2" title="{{ kol.column }}">
+                        {{ kol.column }}
+                    </div>
+
+                    {% if kol.type == 'numeric' %}
+                    <div class="row row-cols-3 g-2 text-center mt-1">
+                        <div class="col">
+                            <div class="small text-muted">Min</div>
+                            <div class="fw-bold text-primary">{{ kol.data.min }}</div>
+                        </div>
+                        <div class="col">
+                            <div class="small text-muted">Średnia</div>
+                            <div class="fw-bold text-success">{{ kol.data.mean }}</div>
+                        </div>
+                        <div class="col">
+                            <div class="small text-muted">Max</div>
+                            <div class="fw-bold text-danger">{{ kol.data.max }}</div>
+                        </div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        Brakujące wartości:
+                        <span class="fw-semibold {% if kol.data.missing_values > 0 %}text-danger{% else %}text-success{% endif %}">
+                            {{ kol.data.missing_values }}
+                        </span>
+                    </div>
+
+                    {% elif kol.type == 'categorical' %}
+                    <div class="row row-cols-2 g-2 mt-1">
+                        <div class="col text-center">
+                            <div class="small text-muted">Unikalne wartości</div>
+                            <div class="fw-bold fs-5 text-warning">{{ kol.data.unique_values }}</div>
+                        </div>
+                        <div class="col text-center">
+                            <div class="small text-muted">Brakujące wartości</div>
+                            <div class="fw-bold fs-5 {% if kol.data.missing_values > 0 %}text-danger{% else %}text-success{% endif %}">
+                                {{ kol.data.missing_values }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        Najczęstsza wartość:
+                        <span class="fw-semibold text-dark">
+                            {% if kol.data.most_frequent %}"{{ kol.data.most_frequent }}"{% else %}<em>brak danych</em>{% endif %}
+                        </span>
+                    </div>
+
+                    {% else %}
+                    <div class="text-muted small mt-2">⚠️ Kolumna nie zawiera żadnych danych.</div>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">Brak danych do wyświetlenia.</p>
+        {% endif %}
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         KARTA 4 – Wykres: braki danych per kolumna
+    ══════════════════════════════════════════ -->
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h5 class="card-title text-muted mb-0">📉 Braki danych per kolumna</h5>
             <span class="badge bg-warning text-dark">Chart.js</span>
         </div>
+        <canvas id="missingChart" height="80"></canvas>
+        <p id="no-missing-msg" class="text-success text-center mt-2" style="display:none;">
+            ✅ Brak brakujących wartości we wszystkich kolumnach!
+        </p>
+    </div>
 
-        <canvas id="myChart" height="100"></canvas>
+    <!-- ══════════════════════════════════════════
+         KARTA 5 – Wykres: rozkład typów kolumn
+    ══════════════════════════════════════════ -->
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h5 class="card-title text-muted mb-0">🍩 Rozkład typów kolumn</h5>
+            <span class="badge bg-warning text-dark">Chart.js</span>
+        </div>
+        <div style="max-width:320px; margin:0 auto;">
+            <canvas id="typeChart"></canvas>
+        </div>
     </div>
 
 </div>
 {% endblock %}
 
+
 {% block modals %}
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<!-- ══ Modal: potwierdzenie usunięcia ══ -->
+<div class="modal fade" id="deleteModal" tabindex="-1"
+     aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteModalLabel">Potwierdzenie usunięcia</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
             <div class="modal-body">
-                Czy na pewno chcesz trwale usunąć ten plik z bazy danych? <strong>Tej operacji nie można cofnąć!</strong>
+                Czy na pewno chcesz trwale usunąć ten plik z bazy danych?
+                <strong>Tej operacji nie można cofnąć!</strong>
             </div>
-            
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                
                 <form action="{% url 'delete_dataset' plik.id %}" method="POST" class="m-0">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Tak, usuń trwale</button>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
+
+<!-- ══ Dane z Django przekazane bezpiecznie jako JSON ══ -->
+<script id="data-cols" type="application/json">
+[{% for kol in statystyki.kolumny_szczegoly %}{"name":"{{ kol.column|escapejs }}","type":"{{ kol.type }}","missing":{% if kol.type == 'numeric' or kol.type == 'categorical' %}{{ kol.data.missing_values }}{% else %}0{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}]
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    // 1. znajdujemy plik na stronie
-    const ctx = document.getElementById('myChart');
+// ── Odczyt danych z Django ──
+const rawCols = JSON.parse(document.getElementById('data-cols').textContent);
 
-    // 2. tworzymy wykres
-    new Chart(ctx, {
-        type: 'doughnut', // typ wykresu: bar (słupkowy), pie (kołowy), line (liniowy)
+// ── Wykres 1: braki danych per kolumna (słupkowy) ──
+const missingCols = rawCols.filter(c => c.missing > 0);
+if (missingCols.length === 0) {
+    document.getElementById('missingChart').style.display = 'none';
+    document.getElementById('no-missing-msg').style.display = 'block';
+} else {
+    new Chart(document.getElementById('missingChart'), {
+        type: 'bar',
         data: {
-            // etykiety wykresu (np. nazwy kolumn)
-            labels: ['Kolumna A', 'Kolumna B', 'Kolumna C', 'Kolumna D', 'Kolumna E'],
+            labels: missingCols.map(c => c.name),
             datasets: [{
-                label: 'Ilość błędów w danych',
-                // Wartości wykresu - tutaj do podpięcia dane z django
-                data: [12, 19, 3, 5, 2],
-                // kolory wykresu
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.5)',
-                    'rgba(54, 162, 235, 0.5)',
-                    'rgba(255, 206, 86, 0.5)',
-                    'rgba(75, 192, 192, 0.5)',
-                    'rgba(153, 102, 255, 0.5)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)'
-                ],
-                borderWidth: 1
+                label: 'Liczba brakujących wartości',
+                data:  missingCols.map(c => c.missing),
+                backgroundColor: 'rgba(220, 53, 69, 0.6)',
+                borderColor:     'rgba(220, 53, 69, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
             }]
         },
         options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: { label: ctx => ` ${ctx.parsed.y} brakujących wartości` }
                 }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } },
+                x: { ticks: { maxRotation: 45 } }
             }
         }
     });
+}
+
+// ── Wykres 2: rozkład typów kolumn (doughnut) ──
+const numeric     = rawCols.filter(c => c.type === 'numeric').length;
+const categorical = rawCols.filter(c => c.type === 'categorical').length;
+const empty       = rawCols.filter(c => c.type === 'empty').length;
+
+new Chart(document.getElementById('typeChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Liczbowe', 'Tekstowe / kategoryczne', 'Puste'],
+        datasets: [{
+            data: [numeric, categorical, empty],
+            backgroundColor: [
+                'rgba(25, 135, 84,   0.75)',
+                'rgba(255, 193, 7,   0.75)',
+                'rgba(108, 117, 125, 0.75)'
+            ],
+            borderColor: [
+                'rgb(25, 135, 84)',
+                'rgb(255, 193, 7)',
+                'rgb(108, 117, 125)'
+            ],
+            borderWidth: 2,
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} kolumn` }
+            }
+        }
+    }
+});
+
+// ── Filtrowanie kart kolumn ──
+function filterCols(type) {
+    document.querySelectorAll('.col-card').forEach(el => {
+        el.style.display = (type === 'all' || el.dataset.type === type) ? '' : 'none';
+    });
+}
 </script>
 {% endblock %}
