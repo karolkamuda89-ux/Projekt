@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+import pandas as pd
 
 def index(request):
     return render(request, "datasets/index.html")
@@ -55,7 +56,52 @@ def file_list(request):
     return render(request, 'datasets/list.html', {
         'datasets': user_files
     })
+import pandas as pd
 
+def get_statistics(file_path):
+    try:
+        # Wczytujemy plik przez Pandas
+        df = pd.read_csv(file_path, on_bad_lines='skip')
+        print("--- LOCATIONS OF NULLS ---")
+        print(df[df.isnull().any(axis=1)])
+        print("--------------------------")
+        df = df.replace(r'^\s*$', pd.NA, regex=True)
+        if df.empty:
+            return {'error': 'Plik jest pusty.'}
+
+        # 1. To są te klucze, które Twój HTML wyświetlał wcześniej:
+        liczba_wierszy = len(df)
+        liczba_kolumn = df.shape[1]
+        puste_komorki = int(df.isna().sum().sum())
+
+        # 2. To są nowe statystyki biznesowe:
+        best_days = df.groupby('date')['sales_amount'].sum().sort_values(ascending=False)
+        top_day = best_days.index[0]
+        top_day_amount = round(best_days.iloc[0])
+
+        top_region = df['region'].mode()[0]
+        top_payment = df['payment_method'].mode()[0]
+        average_sales = round(df['sales_amount'].mean(), 2)
+        top_product = df['product'].mode()[0]
+
+        # 3. Zwracamy JEDEN wielki słownik, który ma i stare, i nowe dane:
+        return {
+            # Stare klucze (znów zaczną działać!)
+            'liczba_wierszy': liczba_wierszy,
+            'liczba_kolumn': liczba_kolumn,
+            'puste': puste_komorki,
+            
+            # Nowe klucze
+            'najlepszy_dzien': f"{top_day} ({top_day_amount} zł)",
+            'najlepszy_region': top_region,
+            'najczestsza_platnosc': top_payment,
+            'srednia_cena': f"{average_sales} zł",
+            'najczestszy_produkt': top_product
+        }
+        
+    except Exception as e:
+        # Jeśli coś pójdzie nie tak, ten klucz wyłapie błąd w HTML
+        return {'error': f"Błąd analizy pliku: {str(e)}"}
 def dataset_detail(request, dataset_id):
     dataset = get_object_or_404(UploadedFile, id=dataset_id, user=request.user)
     stats = get_statistics(dataset.file.path)
@@ -91,3 +137,5 @@ def register(request): ################# Poprawione
             print("DEBUG: Brak loginu lub hasła - nie zapisuję!")
     
     return render(request, 'registration/login.html')
+
+    # Ta funkcja na górze przyjmuje ścieżkę pod ogólną nazwą 'file_path'

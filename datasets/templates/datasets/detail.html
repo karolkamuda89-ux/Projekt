@@ -4,40 +4,40 @@
 <div class="text-start" data-aos="fade-up">
     
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- przycisk powrotu -->
         <a href="{% url 'list' %}" class="btn btn-outline-secondary btn-sm">
             &larr; Powrót do listy plików
         </a>
-        <!-- przycisk do usuwania pliku -->
-    <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
             Usuń plik
         </button>
-</div>    
+    </div>    
 
-    <!-- nagłówek -->
     <h2 class="mb-4">Szczegóły pliku: <span class="text-primary">{{ plik.name|default:"Mój_raport.csv" }}</span></h2>
     
     <div class="card p-4 shadow-sm mb-4">
         <h5 class="card-title border-bottom pb-2 mb-3 text-muted">Metadane pliku</h5>
         
-        <!-- podział na równe koluemny (col-md-6 czyli po 50%, bo domyślnie 12 pasków) -->
+        {% if statystyki.error %}
+            <div class="alert alert-danger">
+                <strong>⚠️ Problem z analizą pliku:</strong> {{ statystyki.error }}
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-md-6">
-                <p class="mb-2"><strong>ID w bazie:</strong> {{ plik.id}}</p>
+                <p class="mb-2"><strong>ID w bazie:</strong> {{ plik.id }}</p>
                 <p class="mb-2"><strong>Data wgrania:</strong> {{ plik.uploaded_at|date:"d.m.Y H:i" }}</p>
             </div>
             <div class="col-md-6">
                 <p class="mb-2"><strong>Status analizy:</strong> <span class="badge bg-success">{{ plik.status|default:"W toku" }}</span></p>
-                <p class="mb-2"><strong>Ilość wierszy:</strong> {{ statystyki.liczba_wierszy}}</p>
+                <p class="mb-2"><strong>Ilość wierszy:</strong> {{ statystyki.liczba_wierszy }}</p>
             </div>
         </div>
     </div>
 
-    <!-- karta na statystyki lub wykresy -->
-<div class="card p-4 shadow-sm mb-4">
+    <div class="card p-4 shadow-sm mb-4">
         
         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-            <h5 class="card-title text-muted mb-0">Podstawowe statystyki</h5>
+            <h5 class="card-title text-muted mb-0">Podstawowe i Zaawansowane Statystyki</h5>
             <span class="badge bg-primary text-light">Pandas Engine</span>
         </div>
 
@@ -45,8 +45,7 @@
             <table class="table table-bordered table-hover table-sm mb-0">
                 <thead class="table-light">
                     <tr>
-                        <!-- Podział tego po 50% podstawowoych statystyk-->
-                        <th scope="col" style="width: 50%;">Cecha pliku</th>
+                        <th scope="col" style="width: 50%;">Cecha pliku / Metryka biznesowa</th>
                         <th scope="col" style="width: 50%;">Wartość</th>
                     </tr>
                 </thead>
@@ -61,20 +60,42 @@
                     </tr>
                     <tr>
                         <td>Puste komórki (braki danych)</td>
-                        <!-- Czy ten plik ma jakieś puste komórki? Jeśli tak to text-danger da czerwony, jeśli nie to text-succes da zielony -->
                         <td class="fw-bold {% if statystyki.puste > 0 %}text-danger{% else %}text-success{% endif %}">
                             {{ statystyki.puste }}
                         </td>
                     </tr>
                     <tr>
                         <td>Rozmiar pliku</td>
-                        <td class="fw-bold text-muted">{{ statystyki.rozmiar }}</td>
+                        <td class="fw-bold text-muted">{{ plik.file.size|filesizeformat }}</td>
                     </tr>
+                    
+                    {% if not statystyki.error %}
+                    <tr>
+                        <td>Najlepszy dzień sprzedażowy</td>
+                        <td class="fw-bold text-primary">{{ statystyki.najlepszy_dzien }}</td>
+                    </tr>
+                    <tr>
+                        <td>Region z najwyższą częstotliwością zakupów</td>
+                        <td class="fw-bold">{{ statystyki.najlepszy_region }}</td>
+                    </tr>
+                    <tr>
+                        <td>Najczęściej używana metoda płatności</td>
+                        <td class="fw-bold">{{ statystyki.najczestsza_platnosc }}</td>
+                    </tr>
+                    <tr>
+                        <td>Średnia wartość transakcji (sales_amount)</td>
+                        <td class="fw-bold">{{ statystyki.srednia_cena }}</td>
+                    </tr>
+                    <tr>
+                        <td>Najczęściej kupowany przedmiot (Hit sprzedaży)</td>
+                        <td class="fw-bold text-success">{{ statystyki.najczestszy_produkt }}</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
     </div>
-    <!-- karta do wykresu -->
+
     <div class="card p-4 shadow-sm mb-4">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
             <h5 class="card-title text-muted mb-0">Wizualizacja typów danych</h5>
@@ -113,23 +134,18 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // 1. znajdujemy plik na stronie
     const ctx = document.getElementById('myChart');
 
-    // 2. tworzymy wykres
     new Chart(ctx, {
-        type: 'doughnut', // typ wykresu: bar (słupkowy), pie (kołowy), line (liniowy)
+        type: 'doughnut',
         data: {
-            // etykiety wykresu (np. nazwy kolumn)
             labels: ['Kolumna A', 'Kolumna B', 'Kolumna C', 'Kolumna D', 'Kolumna E'],
             datasets: [{
                 label: 'Ilość błędów w danych',
-                // Wartości wykresu - tutaj do podpięcia dane z django
                 data: [12, 19, 3, 5, 2],
-                // kolory wykresu
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.5)',
                     'rgba(54, 162, 235, 0.5)',
