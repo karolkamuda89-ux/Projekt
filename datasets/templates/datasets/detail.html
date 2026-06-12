@@ -7,9 +7,16 @@
         <a href="{% url 'list' %}" class="btn btn-outline-secondary btn-sm">
             &larr; Powrót do listy plików
         </a>
-        <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
-            Usuń plik
-        </button>
+        <div class="d-flex gap-2">
+            {% if plik.file %}
+            <a href="{{ plik.file.url }}" download class="btn btn-success btn-sm shadow-sm">
+                ⬇️ Pobierz CSV
+            </a>
+            {% endif %}
+            <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Usuń plik
+            </button>
+        </div>
     </div>    
 
     <h2 class="mb-4">

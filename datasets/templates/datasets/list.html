@@ -10,7 +10,7 @@
     <div class="mb-4">
         <form method="GET" action="{% url 'list' %}" class="shadow-sm">
             <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Wyszukaj plik po nazwie:" value="{{ request.GET.q }}">
+                <input type="text" name="q" id="liveSearchInput" autocomplete="off" class="form-control" placeholder="Wyszukaj plik po nazwie:" value="{{ request.GET.q }}">
                 <button class="btn btn-primary" type="submit">Szukaj</button>
             </div>
         </form>
@@ -22,18 +22,18 @@
                 
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nazwa pliku</th>
-                        <th scope="col">Data wgrania</th>
+                        <th scope="col" class="sortable" style="cursor:pointer;" onclick="sortTable('id', this)">ID <span class="sort-arrow"></span></th>
+                        <th scope="col" class="sortable" style="cursor:pointer;" onclick="sortTable('name', this)">Nazwa pliku <span class="sort-arrow"></span></th>
+                        <th scope="col" class="sortable" style="cursor:pointer;" onclick="sortTable('date', this)">Data wgrania <span class="sort-arrow"></span></th>
                         <th scope="col">Nazwa użytkownika</th>
-                        <th scope="col" class="text-end">Szczegóły</th>
+                        <th scope="col" class="text-end">Akcje</th>
                     </tr>
                 </thead>
                 
                 <tbody>
                     <!-- pętla django -->
                     {% for plik in datasets %}
-                    <tr class="shadow-sm"> <td class="fw-bold text-primary">#{{ plik.id }}</td>
+                    <tr class="shadow-sm file-row" data-name="{{ plik.name|lower }}" data-id="{{ plik.id }}" data-date="{{ plik.uploaded_at|date:'YmdHis' }}"> <td class="fw-bold text-primary">#{{ plik.id }}</td>
     
                         <td>
                             <div class="d-flex flex-column">
@@ -55,9 +55,18 @@
                         </td>
     
                         <td class="text-end ">
-                            <a href="{% url 'dataset_detail' plik.id %}" class="btn btn-sm btn-primary rounded-pill px-3">
-                                Szczegóły
-                            </a>
+                            <div class="d-inline-flex gap-2">
+                                <a href="{% url 'dataset_detail' plik.id %}" class="btn btn-sm btn-primary rounded-pill px-3">
+                                    Szczegóły
+                                </a>
+                                <form action="{% url 'delete_dataset' plik.id %}" method="POST" class="m-0"
+                                      onsubmit="return confirm('Czy na pewno chcesz trwale usunąć plik &quot;{{ plik.name|escapejs }}&quot;? Tej operacji nie można cofnąć.');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                        Usuń
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                         
@@ -82,6 +91,15 @@
                         </tr>
                     {% endfor %}
 
+                    <tr id="liveSearchNoResults" style="display: none;">
+                        <td colspan="5" class="text-center py-5">
+                            <div class="alert alert-warning d-inline-block shadow-sm">
+                                <i class="bi bi-search mb-2 d-block fs-3"></i>
+                                <strong>Brak wyników wyszukiwania!</strong><br>
+                                Żaden plik nie zaczyna się na: <span class="fst-italic" id="liveSearchTerm"></span>.
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
 
             </table>
@@ -89,4 +107,81 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('liveSearchInput');
+        if (!input) { return; }
+
+        const rows = document.querySelectorAll('tr.file-row');
+        const noResults = document.getElementById('liveSearchNoResults');
+        const term = document.getElementById('liveSearchTerm');
+
+        function filter() {
+            const query = input.value.trim().toLowerCase();
+            let visible = 0;
+
+            rows.forEach(function (row) {
+                const name = row.getAttribute('data-name') || '';
+                // Pokazujemy tylko pliki, których nazwa ZACZYNA SIĘ na wpisany tekst
+                const match = name.startsWith(query);
+                row.style.display = match ? '' : 'none';
+                if (match) { visible++; }
+            });
+
+            // Komunikat "brak wyników" tylko gdy coś wpisano, a nic nie pasuje
+            if (noResults) {
+                if (visible === 0 && query !== '' && rows.length > 0) {
+                    if (term) { term.textContent = '"' + input.value.trim() + '"'; }
+                    noResults.style.display = '';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            }
+        }
+
+        input.addEventListener('input', filter);
+        // Uruchamiamy raz na starcie (gdyby pole miało już wartość)
+        filter();
+    });
+
+    // ── Sortowanie tabeli po kliknięciu nagłówka ──
+    let sortState = { key: null, asc: true };
+
+    function sortTable(key, header) {
+        const tbody = document.querySelector('table tbody');
+        if (!tbody) { return; }
+        const rows = Array.from(document.querySelectorAll('tr.file-row'));
+        if (rows.length === 0) { return; }
+
+        // Ten sam nagłówek -> odwracamy kierunek, inny -> sortujemy rosnąco
+        sortState.asc = (sortState.key === key) ? !sortState.asc : true;
+        sortState.key = key;
+
+        rows.sort(function (a, b) {
+            let va, vb;
+            if (key === 'id') {
+                va = parseInt(a.dataset.id, 10); vb = parseInt(b.dataset.id, 10);
+            } else if (key === 'date') {
+                va = a.dataset.date || ''; vb = b.dataset.date || '';
+            } else { // name
+                va = a.dataset.name || ''; vb = b.dataset.name || '';
+            }
+            if (va < vb) { return sortState.asc ? -1 : 1; }
+            if (va > vb) { return sortState.asc ? 1 : -1; }
+            return 0;
+        });
+
+        // Wstawiamy posortowane wiersze z powrotem (przed wierszem "brak wyników")
+        const noResults = document.getElementById('liveSearchNoResults');
+        rows.forEach(function (row) { tbody.insertBefore(row, noResults); });
+
+        // Strzałki kierunku na nagłówkach
+        document.querySelectorAll('.sort-arrow').forEach(function (s) { s.textContent = ''; });
+        if (header) {
+            const arrow = header.querySelector('.sort-arrow');
+            if (arrow) { arrow.textContent = sortState.asc ? ' ▲' : ' ▼'; }
+        }
+    }
+</script>
 {% endblock %}

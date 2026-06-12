@@ -12,7 +12,13 @@ from django.core.exceptions import ValidationError
 import pandas as pd
 
 def index(request):
-    return render(request, "datasets/index.html")
+    context = {}
+    # Mini-podsumowanie dla zalogowanego użytkownika (kafelki na stronie głównej)
+    if request.user.is_authenticated:
+        user_files = UploadedFile.objects.filter(user=request.user)
+        context['files_count'] = user_files.count()
+        context['last_upload'] = user_files.order_by('-uploaded_at').first()
+    return render(request, "datasets/index.html", context)
 
 @login_required
 def upload_csv(request):

@@ -25,3 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('delete/<int:dataset_id>/', views.delete_dataset, name='delete_dataset'),
 ]
+
+# Serwowanie wgranych plików (media) w trybie deweloperskim - potrzebne m.in. do pobierania CSV
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
