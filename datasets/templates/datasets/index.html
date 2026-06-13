@@ -27,9 +27,7 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Strona Główna</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'upload_csv' %}">Wgraj CSV</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'list' %}">Lista plików</a></li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#malpaModal">Małpa</a></li>
-                    {% endif %}
+                    
                     {% if user.is_authenticated %}
                     <form method="post" action="{% url 'logout' %}">
                         {%csrf_token%}
